@@ -14,7 +14,7 @@ function Home(){
                 // body: JSON.stringify(loginInfo)
         })
         .then(() => {
-            navigate(`/admin/questions/${subject}`)
+            navigate(`/questions/${subject}`)
         }
             
         )

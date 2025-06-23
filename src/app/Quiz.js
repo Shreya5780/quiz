@@ -35,10 +35,11 @@ function Quiz() {
         }))
     }
 
+    
     const submit = () => {
-        console.log("selectedOption", selectedOption)
+        // console.log("selectedOption", selectedOption)
         
-        navigate(`/question/${subject}`)
+        navigate(`/answers/${subject}`, {state: {selectedOption}})
            
        
     }

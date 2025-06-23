@@ -11,8 +11,8 @@ function App() {
        <BrowserRouter>
        <Routes>
         <Route path='/' element={<Home/>} ></Route>
-        <Route path='/admin/questions/:subject' element={<Quiz/>} ></Route>
-        <Route path='/question/:subject' element={<Result/>}></Route>
+        <Route path='/questions/:subject' element={<Quiz/>} ></Route>
+        <Route path='/answers/:subject' element={<Result/>}></Route>
        </Routes>
        </BrowserRouter>
     </div>

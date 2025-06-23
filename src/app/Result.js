@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 function Result() {
 
@@ -7,8 +7,19 @@ function Result() {
 
     const [result, setResult] = useState([]);
 
+    const location = useLocation();
+    const answers  = Object.values(location.state.selectedOption);
+    // console.log(answers)
+    //this ans is in obj state so need to convert into array
+
+
+    const query = answers.length>0 ? answers.map(a => `answer=${encodeURIComponent(a)}`).join('&') : `answer=`;
+
+    console.log("query", query)
+    const navigate = useNavigate();
+
     useEffect(() => {
-        fetch(`http://localhost:8080/question/${subject}?answer=A&answer=B&answer=C&answer=D&answer=A`, {
+        fetch(`http://localhost:8080/question/${subject}?${query}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json'
@@ -18,70 +29,47 @@ function Result() {
 
             .then((response) => response.json())
             .then(data => {
-                setResult(data);
-                console.log("result, ", data[0])
+                setResult(data[0]);
+                // console.log("result, ", data[0])
             })
             .catch((error) => {
                 console.log(error)
             })
     }, [subject]);
 
+    if (!result || !result.questions || !result.answers) {
+        <h3>Loading....</h3>
+    } 
+    // else {
+    //     console.log(result)
+    // }
 
-    useEffect(() => {
-        if (!result) {
-            return <div>Loading...</div>;
-        }
-        // if(result){
-        //     console.log("result ", result)
-        // }else{
-        //     <h2>Loading....</h2>
-        // }
-    }, [result])
+    const back = () => {
+        console.log("back to home ")
+        navigate("/")
+    }
+  
 
-    //run this effect when subject change
 
     return (
-        <div>
+       <div>
+
+       <div>
 
             <h3>Result:  {result.score} </h3>
+            {Array.isArray(result.questions) && result.questions.map((question, index) => (
+                <div key={index}>
+                    <h4>Q{index + 1}: {question.question}</h4>
+                    <p>A: {question.option1} , B: {question.option2} , C: {question.option3} , D: {question.option4}</p>
+                  
+                    <p>Correct Answer: {question.answer}</p>
+                    <p>Your Answer: {result.answers[index]}</p>
+                </div>
+            ))}
+        </div>
 
-            <div>
+        <button id="back" onClick={back}>Go to home page</button> 
 
-                {/* {result.map((question, index) =>{
-                    <div key={index}>
-                        <h1>Result map</h1>
-                    <><h4>
-                        {question.questions.map((q, i) => {
-                            <><h2>Hello</h2><div key={i}>
-                                <><span>
-                                    {q.questionId}
-                                </span>
-                                    <span>
-                                        {q.question}
-                                    </span>
-                                    <span>Correct Answer: </span>
-                                    <span>
-                                        {q.answer}
-                                    </span>
-                                </>;
-                            </div></>
-                        })}
-                    </h4>
-                    <h5>
-                        Your Answers: 
-                        {question.answer.map((a, i) => {
-                            <span key={i}>
-                                {a}
-                            </span>
-                        })}
-                    </h5>
-                    <h2>
-                        {question.score}
-                    </h2>
-                    </>
-                    </div>
-                })} */}
-            </div>
         </div>
     )
 }
