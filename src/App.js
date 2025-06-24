@@ -6,6 +6,7 @@ import Result from './app/Result';
 import AdminHome from './admin/AdminHome';
 import AdminQuiz from './admin/AdminQuiz';
 import AddSubject from './admin/PopupWindows/AddEditSubject';
+import AddEditQuestion from './admin/PopupWindows/AddEditQuestion';
 
 function App() {
   return (
@@ -13,13 +14,14 @@ function App() {
        <BrowserRouter>
        <Routes>
         <Route path='/' element={<Home/>} ></Route>
-        <Route path='/questions/:subject' element={<Quiz/>} ></Route>
+        <Route path='/questions/:subjectId' element={<Quiz/>} ></Route>
         <Route path='/answers/:subject' element={<Result/>}></Route>
 
         {/* admin */}
         <Route path='/admin' element={<AdminHome/>} ></Route>
         <Route path='/admin/quizzes' element={<AdminQuiz/>} ></Route>
-        <Route path='/admin/questions' element={<AdminHome/>} ></Route>
+        {/* <Route path='/admin/questions' element={<AdminQuestion/>} ></Route> */}
+        <Route path='/admin/add/question/:subjectId' element={<AddEditQuestion/>} ></Route>
         <Route path='/admin/users' element={<AdminHome/>} ></Route>
 
         <Route path='/admin/add/subject' element={<AddSubject/>} ></Route>

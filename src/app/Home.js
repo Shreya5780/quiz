@@ -1,32 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { getAllSubject } from "../middleware/GetAllSubject";
 
 function Home(){
-    const [subject, setSubject] = useState("general");
+    const [subjectId, setSubjectId] = useState("");
     const navigate = useNavigate();
 
     const start = () => {
-        fetch(`http://localhost:8080/quiz/${subject}`, {
-            method: "POST",
-            headers: {
-                    'Content-Type': 'application/json'
-            },
-                // body: JSON.stringify(loginInfo)
-        })
-        .then(() => {
-            navigate(`/questions/${subject}`)
-        }
-            
-        )
-
-        .catch(error => {
-             <h3>Error while loading...</h3>
-             console.log(error)
-        }
-           
-        )
-        // navigate("/quiz/ml");
+      console.log("Selected subject:", subjectId);
+      if (!subjectId) {
+        alert("Please select a subject to start the quiz.");
+        return;
+      }
+      navigate(`/questions/${subjectId}`);
+       
     }
+
+    const [subjects, setSubjects] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      getAllSubject()
+        .then(data => {
+          console.log("Fetched subjects:", data);
+          if (!Array.isArray(data)) {
+            throw new Error("Expected an array of subjects");
+          }
+          setSubjects(data);
+          setSubjectId(data[0]?.id || "");
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Error fetching subjects:", error);
+          setLoading(false);
+        });
+     
+    }, []);
+
+    const addQuestion = () => {
+      if (!subjectId) {
+        alert("Please select a subject to add a question.");
+        return;
+      }
+      navigate(`/admin/add/question/${subjectId}`);
+    };
 
    return (
     <><div>
@@ -34,15 +51,23 @@ function Home(){
 
        <p>Please select subject to start with</p>
 
-       <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-         <option value={"general"}>General</option>
-         <option value={"ai"}>AI</option>
-         <option value={"ml"}>ML</option>
-         <option value={"dsa"}>DSA</option>
-       </select>
+       <p>Available Subjects:</p>
+       {loading ? <p>Loading...</p> : (
+         <ul>
+          <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
+            {subjects.map((sub, index) => (
+              <option key={index} value={sub.id}>
+                {sub.subjectName}
+              </option>
+            ))}
+          </select>
+          
+         </ul>
+       )}
 
 
        <button id="start" onClick={start}> Start</button>
+       <button id="addquestion" onClick={addQuestion}> Add Question</button>
      </div><div>
          <h3>Admin Panel</h3>
          <button onClick={() => navigate("/admin")}>Go to Admin</button>

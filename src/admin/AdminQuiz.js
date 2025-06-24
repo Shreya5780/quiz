@@ -1,32 +1,26 @@
 import { use, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { getAllSubject } from "../middleware/GetAllSubject";
 
 function AdminQuiz() {
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("http://localhost:8080/admin/getall", {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Fetched subjects:", data);
-                // Assuming the response is an array of subject names
-                if (!Array.isArray(data)) {
+         getAllSubject()
+                .then(data => {
+                  console.log("Fetched subjects:", data);
+                  if (!Array.isArray(data)) {
                     throw new Error("Expected an array of subjects");
-                }
-
-                setSubjects(data);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error("Error fetching subjects:", error);
-                setLoading(false);
-            });
+                  }
+                  setSubjects(data);
+                  setLoading(false);
+                })
+                .catch(error => {
+                  console.error("Error fetching subjects:", error);
+                  setLoading(false);
+                });
+     
     }, []);
 
     const navigate = useNavigate();
@@ -70,7 +64,6 @@ function AdminQuiz() {
 
                 </ul>
             </div>
-
             <div>
                 <h3>Available Subjects</h3>
                 <div>
@@ -83,7 +76,7 @@ function AdminQuiz() {
                             )}
                             {Array.isArray(subjects) && subjects.map((subject, index) => (
                                 <li key={index}>
-                                    <a href={`/questions/${subject}`}>{subject.subjectName}</a>
+                                    <a href={`/questions/${subject.id}`}>{subject.subjectName}</a>
                                     <button onClick={() => deleteSubject(subject.id, subject.subjectName, index)}>Delete</button>
                                     <button onClick={() => {
                                         editSubject(subject.id, subject.subjectName);

@@ -9,9 +9,6 @@ function Result() {
 
     const location = useLocation();
     const answers  = Object.values(location.state.selectedOption);
-    // console.log(answers)
-    //this ans is in obj state so need to convert into array
-
 
     const query = answers.length>0 ? answers.map(a => `answer=${encodeURIComponent(a)}`).join('&') : `answer=`;
 

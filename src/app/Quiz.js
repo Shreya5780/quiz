@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getQuestionsBySub } from "../middleware/GetQuestionsBySubject";
 
 function Quiz() {
 
-    const { subject } = useParams();
+    const { subjectId } = useParams();
 
     const [questions, setQuestions] = useState([]);
     const [selectedOption, setSelectedOption] = useState([]);
@@ -11,22 +12,20 @@ function Quiz() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/admin/questions/${subject}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-
+        console.log("Fetching questions for subjectId:", subjectId);
+        getQuestionsBySub(subjectId)
             .then(data => {
+                console.log("Fetched questions:", data);
+                if (!Array.isArray(data)) {
+                    throw new Error("Expected an array of questions");      
+                }
                 setQuestions(data);
             })
-            .catch((error) => {
-                console.log(error)
-            })
-    }, [subject]);
-    //run this effect when subject change
+            .catch(error => {
+                console.error("Error fetching questions:", error);
+            });
+  
+    }, [subjectId]);
 
     const handleOption = (qid, selected) => {
         setSelectedOption(prev => ({
@@ -37,23 +36,19 @@ function Quiz() {
 
     
     const submit = () => {
-        // console.log("selectedOption", selectedOption)
-        
-        navigate(`/answers/${subject}`, {state: {selectedOption}})
-           
-       
+        navigate(`/answers/${subjectId}`, {state: {selectedOption}})
+
+
     }
 
     return (
         <div>
-            <h3>Start your Quiz With Subject: {subject} </h3>
+            <h3>Start your Quiz With Subject: {subjectId} </h3>
             <div>
                 <h2> Total :
                     <span> {questions.length} </span>
                     questions
-                    {/* {questions.map((q, i) => {
-                    <p> {q.question} </p>
-                })} */}
+                  
                 </h2>
 
                 <div>
@@ -83,7 +78,6 @@ function Quiz() {
                         </div>
                     </div>
 
-                    {/* selected option : {selectedOption} */}
                 </div>
             </div>
 
@@ -93,18 +87,3 @@ function Quiz() {
 }
 
 export default Quiz;
-
-
-// {questions.map((q, i) => (
-//                         <div key={i}>
-//                             <h3>
-//                                 <span>{q.questionId}</span>: {q.question}
-//                             </h3>
-//                             <ul>
-//                                 <li>A: {q.optionA}</li>
-//                                 <li>B: {q.optionB}</li>
-//                                 <li>C: {q.optionC}</li>
-//                                 <li>D: {q.optionD}</li>
-//                             </ul>
-//                         </div>
-//                     ))}
