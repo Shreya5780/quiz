@@ -29,21 +29,24 @@ function Home(){
     }
 
    return (
-    <div>
-      <h3> Welcome to MyQuiz, </h3>
+    <><div>
+       <h3> Welcome to MyQuiz, </h3>
 
-      <p>Please select subject to start with</p>
-      
-      <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-        <option value={"general"}>General</option>
-        <option value={"ai"}>AI</option>
-        <option value={"ml"}>ML</option>
-        <option value={"dsa"}>DSA</option>
-      </select>
-     
+       <p>Please select subject to start with</p>
 
-      <button id="start" onClick={start}> Start</button>
-    </div>
+       <select value={subject} onChange={(e) => setSubject(e.target.value)}>
+         <option value={"general"}>General</option>
+         <option value={"ai"}>AI</option>
+         <option value={"ml"}>ML</option>
+         <option value={"dsa"}>DSA</option>
+       </select>
+
+
+       <button id="start" onClick={start}> Start</button>
+     </div><div>
+         <h3>Admin Panel</h3>
+         <button onClick={() => navigate("/admin")}>Go to Admin</button>
+       </div></>
   );
 }
 
