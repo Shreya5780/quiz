@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function AddSubject() {
-    const {subjectName, subjectId} = useParams();
+    const { subjectName, subjectId } = useParams();
 
     const [subject, setSubject] = useState("");
     const navigate = useNavigate();
@@ -15,35 +15,35 @@ function AddSubject() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-       
+
         let url = `http://localhost:8080/admin/add/${subject}`;
 
         if (subjectId) {
             url = `http://localhost:8080/admin/update/${subjectId}?subjectName=${subject}`;
         }
 
-         fetch(url, {
+        fetch(url, {
             method: subjectId ? "PUT" : "POST",
             headers: {
-                    'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             },
             // body: JSON.stringify({ subjectName: subject }) 
         })
-        .then(() => {
-            navigate(`/admin/quizzes`); 
-            if (subjectId) {
-                console.log(`Subject updated: ${subjectName} to ${subject}`);
-            } else {
-                console.log(`Subject added: ${subject}`);
-            }
-            setSubject("");
-        })
+            .then(() => {
+                navigate(`/admin/quizzes`);
+                if (subjectId) {
+                    console.log(`Subject updated: ${subjectName} to ${subject}`);
+                } else {
+                    console.log(`Subject added: ${subject}`);
+                }
+                setSubject("");
+            })
 
-        .catch(error => {
-             <h3>Error while loading...</h3>
-             console.log(error)
-        }
-       )
+            .catch(error => {
+                <h3>Error while loading...</h3>
+                console.log(error)
+            }
+            )
     };
 
     return (

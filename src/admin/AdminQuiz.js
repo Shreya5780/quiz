@@ -7,31 +7,31 @@ function AdminQuiz() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-         getAllSubject()
-                .then(data => {
-                  console.log("Fetched subjects:", data);
-                  if (!Array.isArray(data)) {
+        getAllSubject()
+            .then(data => {
+                console.log("Fetched subjects:", data);
+                if (!Array.isArray(data)) {
                     throw new Error("Expected an array of subjects");
-                  }
-                  setSubjects(data);
-                  setLoading(false);
-                })
-                .catch(error => {
-                  console.error("Error fetching subjects:", error);
-                  setLoading(false);
-                });
-     
+                }
+                setSubjects(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching subjects:", error);
+                setLoading(false);
+            });
+
     }, []);
 
     const navigate = useNavigate();
-    
+
 
     const editSubject = (subjectId, subjectName) => {
         // console.log(`Editing subject:  ${subjectName} : ${subjectId}`);
         navigate(`/admin/update/${subjectName}/${subjectId}`);
     };
 
-    const deleteSubject = (subjectId, subjectName, index) => {
+    const deleteSubject = (subjectId, subjectName) => {
         if (window.confirm(`Are you sure you want to delete the subject: ${subjectName}?`)) {
             fetch(`http://localhost:8080/admin/delete/${subjectId}`, {
                 method: "DELETE",
@@ -40,15 +40,15 @@ function AdminQuiz() {
                 },
             })
                 .then(() => {
-                    setSubjects(prevSubjects => prevSubjects.filter((_, i) => i !== index));
+                    setSubjects(prevSubjects => prevSubjects.filter(s => s.id !== subjectId));
                     console.log(`Deleted subject: ${subjectName}`);
                 })
                 .catch(error => {
-                console.error("Error deleting subject:", error);
-            });
+                    console.error("Error deleting subject:", error);
+                });
         }
-            
-            
+
+
     };
 
     return (

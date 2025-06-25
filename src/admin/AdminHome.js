@@ -9,9 +9,7 @@ function AdminHome() {
           <li>
             <a href="/admin/quizzes">Manage Quizzes</a>
           </li>
-          <li>
-            <a href="/admin/questions">Manage Questions</a>
-          </li>
+
           <li>
             <a href="/admin/users">Manage Users</a>
           </li>

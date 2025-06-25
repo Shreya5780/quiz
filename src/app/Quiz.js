@@ -17,14 +17,14 @@ function Quiz() {
             .then(data => {
                 console.log("Fetched questions:", data);
                 if (!Array.isArray(data)) {
-                    throw new Error("Expected an array of questions");      
+                    throw new Error("Expected an array of questions");
                 }
                 setQuestions(data);
             })
             .catch(error => {
                 console.error("Error fetching questions:", error);
             });
-  
+
     }, [subjectId]);
 
     const handleOption = (qid, selected) => {
@@ -34,12 +34,51 @@ function Quiz() {
         }))
     }
 
-    
+
     const submit = () => {
-        navigate(`/answers/${subjectId}`, {state: {selectedOption}})
+        console.log("Submitting answers:", selectedOption);
+        navigate(`/answers/${subjectId}`, { state: { selectedOption, questions } })
 
 
     }
+
+    const handleEdit = (qid) => {
+        console.log("Editing question with qid:", qid);
+        const question = questions.find(q => q.qid === qid);
+        if (question) {
+            window.open()
+            navigate(`/admin/update/question/${subjectId}/${qid}`, { state: { question } });
+        } else {
+            console.error("Question not found for qid:", qid);
+        }
+    }
+
+    const handleDelete = (questionId) => {
+        if (window.confirm(`Are you sure you want to delete this question?`)) {
+            fetch(`http://localhost:8080/questions/delete/${questionId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(() => {
+                    setQuestions(prevQuestions => prevQuestions.filter(q => q.qid !== questionId));
+                    console.log(`Deleted question: ${questionId}`);
+                })
+                .catch(error => {
+                    console.error("Error deleting question:", error);
+                });
+        }
+
+
+    };
+
+    const isCorrect = (qid, selected) => {
+        const question = questions.find(q => q.qid === qid);
+        return question && selected === question.answer;
+    }
+
+    const isAdmin = false;
 
     return (
         <div>
@@ -48,33 +87,37 @@ function Quiz() {
                 <h2> Total :
                     <span> {questions.length} </span>
                     questions
-                  
+
                 </h2>
 
                 <div>
 
                     <div>
                         {questions.map((q, i) => (
-                            <div key={q.questionId}>
+                            <div key={q.qid}>
                                 <h4>
-                                    <span> {q.questionId} </span>
+                                    <span> {i + 1}. </span>
                                     <span> {q.question} </span>
                                 </h4>
 
                                 <div>
-                                   
-                                    <input type="radio" value="A" name={`selectedOtion-${q.questionId}`} onChange={e => handleOption(q.questionId, e.target.value)} />  {q.option1}
-                                    <input type="radio" value="B" name={`selectedOtion-${q.questionId}`} onChange={e => handleOption(q.questionId, e.target.value)} /> {q.option2}
-                                    <input type="radio" value="C" name={`selectedOtion-${q.questionId}`} onChange={e => handleOption(q.questionId, e.target.value)} /> {q.option3}
-                                    <input type="radio" value="D" name={`selectedOtion-${q.questionId}`} onChange={e => handleOption(q.questionId, e.target.value)} /> {q.option4}
+
+                                    <input type="radio" value="A" name={`selectedOtion-${q.qid}`} onChange={e => handleOption(q.qid, e.target.value)} checked={isAdmin ? isCorrect(q.qid, "A") : selectedOption[q.qid] === "A"} />  {q.option1}
+                                    <input type="radio" value="B" name={`selectedOtion-${q.qid}`} onChange={e => handleOption(q.qid, e.target.value)} checked={isAdmin ? isCorrect(q.qid, "B") : selectedOption[q.qid] === "B"} /> {q.option2}
+                                    <input type="radio" value="C" name={`selectedOtion-${q.qid}`} onChange={e => handleOption(q.qid, e.target.value)} checked={isAdmin ? isCorrect(q.qid, "C") : selectedOption[q.qid] === "C"} /> {q.option3}
+                                    <input type="radio" value="D" name={`selectedOtion-${q.qid}`} onChange={e => handleOption(q.qid, e.target.value)} checked={isAdmin ? isCorrect(q.qid, "D") : selectedOption[q.qid] === "D"} /> {q.option4}
 
                                 </div>
+
+                                <button className="edit-button" onClick={() => handleEdit(q.qid)}>Edit</button>
+                                <button className="delete-button" onClick={() => handleDelete(q.qid)}>Delete</button>
                             </div>
 
                         ))}
                         <div>
 
                             <button id="submit" onClick={submit}>Submit</button>
+                            <button id="submit" onClick={() => navigate(`/admin/add/question/${subjectId}`)}>Add Question</button>
                         </div>
                     </div>
 
