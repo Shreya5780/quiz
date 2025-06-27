@@ -58,7 +58,7 @@ function AdminQuiz() {
 
             <div>
                 <ul>
-                    <li>
+                    <li style={{listStyle: "none", padding: "10px", margin: "5px 0"}}>
                         <a href="/admin/add/subject">Add Subject</a>
                     </li>
 
@@ -75,10 +75,10 @@ function AdminQuiz() {
                                 <p>No subjects available. Please add a subject.</p>
                             )}
                             {Array.isArray(subjects) && subjects.map((subject, index) => (
-                                <li key={index}>
-                                    <a href={`/questions/${subject.id}`}>{subject.subjectName}</a>
-                                    <button onClick={() => deleteSubject(subject.id, subject.subjectName, index)}>Delete</button>
-                                    <button onClick={() => {
+                                <li key={index} style={{listStyle: "none", padding: "10px", margin: "5px 0"}}>
+                                    <a style={{ margin: "5px"}} href={`/questions/${subject.id}`}>{subject.subjectName}</a>
+                                    <button style={{ margin: "5px"}}  onClick={() => deleteSubject(subject.id, subject.subjectName, index)}>Delete</button>
+                                    <button style={{ margin: "5px"}}  onClick={() => {
                                         editSubject(subject.id, subject.subjectName);
                                     }}>Edit</button>
                                 </li>

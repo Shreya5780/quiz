@@ -37,9 +37,10 @@ function Quiz() {
 
     const submit = () => {
         console.log("Submitting answers:", selectedOption);
+        console.log("Submitting answers subjectId ..........:", subjectId);
         navigate(`/answers/${subjectId}`, { state: { selectedOption, questions } })
-
-
+        
+      
     }
 
     const handleEdit = (qid) => {
@@ -109,15 +110,15 @@ function Quiz() {
 
                                 </div>
 
-                                <button className="edit-button" onClick={() => handleEdit(q.qid)}>Edit</button>
-                                <button className="delete-button" onClick={() => handleDelete(q.qid)}>Delete</button>
+                                <button style={{ margin: "2px"} }  className="edit-button" onClick={() => handleEdit(q.qid)}>Edit</button>
+                                <button style={{ margin: "2px"} }  className="delete-button" onClick={() => handleDelete(q.qid)}>Delete</button>
                             </div>
 
                         ))}
                         <div>
 
-                            <button id="submit" onClick={submit}>Submit</button>
-                            <button id="submit" onClick={() => navigate(`/admin/add/question/${subjectId}`)}>Add Question</button>
+                            <button style={{ margin: "25px 5px"}}  id="submit" onClick={submit}>Submit</button>
+                            <button style={{ margin: "25px 5px"}}  id="submit" onClick={() => navigate(`/admin/add/question/${subjectId}`)}>Add Question</button>
                         </div>
                     </div>
 

@@ -71,16 +71,16 @@ function AddEditQuestion() {
         <div className="popup-window">
             <h2>Add/Edit Question</h2>
             <form onSubmit={handleSubmit}>
-                <input type="text" name="question" placeholder="Question" value={questionData.question} required onChange={e => setQuestionData({ ...questionData, question: e.target.value })} />
+                <input style={{ margin: "5px", display: "block"}}   type="text" name="question" placeholder="Question" value={questionData.question} required onChange={e => setQuestionData({ ...questionData, question: e.target.value })} />
 
-                <input type="text" name="option1" placeholder="Option A" value={questionData.option1} required onChange={e => setQuestionData({ ...questionData, option1: e.target.value })} />
-                <input type="text" name="option2" placeholder="Option B" value={questionData.option2} required onChange={e => setQuestionData({ ...questionData, option2: e.target.value })} />
-                <input type="text" name="option3" placeholder="Option C" value={questionData.option3} required onChange={e => setQuestionData({ ...questionData, option3: e.target.value })} />
-                <input type="text" name="option4" placeholder="Option D" value={questionData.option4} required onChange={e => setQuestionData({ ...questionData, option4: e.target.value })} />
-                <input type="text" name="answer" placeholder="Correct Answer" value={questionData.answer} required onChange={e => setQuestionData({ ...questionData, answer: e.target.value })} />
-                <button type="submit">Save Question</button>
+                <input style={{ margin: "5px", display: "block"}}  type="text" name="option1" placeholder="Option A" value={questionData.option1} required onChange={e => setQuestionData({ ...questionData, option1: e.target.value })} />
+                <input style={{ margin: "5px", display: "block"}}  type="text" name="option2" placeholder="Option B" value={questionData.option2} required onChange={e => setQuestionData({ ...questionData, option2: e.target.value })} />
+                <input style={{ margin: "5px", display: "block"}}   type="text" name="option3" placeholder="Option C" value={questionData.option3} required onChange={e => setQuestionData({ ...questionData, option3: e.target.value })} />
+                <input style={{ margin: "5px", display: "block"}}   type="text" name="option4" placeholder="Option D" value={questionData.option4} required onChange={e => setQuestionData({ ...questionData, option4: e.target.value })} />
+                <input style={{ margin: "5px", display: "block"}}   type="text" name="answer" placeholder="Correct Answer" value={questionData.answer} required onChange={e => setQuestionData({ ...questionData, answer: e.target.value })} />
+                <button style={{ margin: "5px", display: "block"}}   type="submit">Save Question</button>
             </form>
-            <button className="close-button" onClick={() => navigate(`/questions/${subjectId}`)}>Close</button>
+            <button style={{ margin: "5px", display: "block"}}   className="close-button" onClick={() => navigate(`/questions/${subjectId}`)}>Close</button>
         </div>
     );
 }

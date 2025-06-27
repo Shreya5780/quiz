@@ -7,6 +7,7 @@ import AdminQuiz from './admin/AdminQuiz';
 import AddSubject from './admin/PopupWindows/AddEditSubject';
 import AddEditQuestion from './admin/PopupWindows/AddEditQuestion';
 import Score from './app/Score';
+import ScorePage from './app/score/ScorePage';
 
 function App() {
   return (
@@ -15,13 +16,14 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} ></Route>
           <Route path='/questions/:subjectId' element={<Quiz />} ></Route>
-          <Route path='/answers/:subject' element={<Score />}></Route>
+          <Route path='/answers/:subjectId' element={<Score />}></Route>
 
           {/* admin */}
           <Route path='/admin' element={<AdminHome />} ></Route>
           <Route path='/admin/quizzes' element={<AdminQuiz />} ></Route>
           <Route path='/admin/add/question/:subjectId' element={<AddEditQuestion />} ></Route>
           <Route path='/admin/users' element={<AdminHome />} ></Route>
+          <Route path='/admin/score' element={<ScorePage />} ></Route>
 
           <Route path='/admin/add/subject' element={<AddSubject />} ></Route>
           <Route path='/admin/update/question/:subjectId/:qid' element={<AddEditQuestion />} > </Route>
