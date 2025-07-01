@@ -10,6 +10,11 @@ function Quiz() {
     const [selectedOption, setSelectedOption] = useState([]);
 
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [timer, setTimer] = useState(30);
+
 
     useEffect(() => {
         console.log("Fetching questions for subjectId:", subjectId);
@@ -20,12 +25,27 @@ function Quiz() {
                     throw new Error("Expected an array of questions");
                 }
                 setQuestions(data);
+                setIsLoading(false);
             })
             .catch(error => {
                 console.error("Error fetching questions:", error);
             });
 
     }, [subjectId]);
+
+    useEffect(() => {
+        if (isLoading) return;
+        if (timer === 0) {
+            alert("Time is up! Submitting your answers.");
+            submit();
+            return;
+        }
+        const timerId = setInterval(() => {
+            setTimer(prev => prev - 1);
+        }, 1000);
+        return () => clearInterval(timerId);
+    }, [timer, isLoading]);
+
 
     const handleOption = (qid, selected) => {
         setSelectedOption(prev => ({
@@ -36,53 +56,56 @@ function Quiz() {
 
 
     const submit = () => {
+        setIsSubmitting(true);
         console.log("Submitting answers:", selectedOption);
         console.log("Submitting answers subjectId ..........:", subjectId);
 
-        let ans = 0;
-        questions.forEach(question => {
-            const userAnswer = selectedOption[question.qid];
-            if (userAnswer === question.answer) {
-                ans += 1;
-            }
-        });
-        console.log("Calculated score:", ans);
+        setTimeout(() => {
 
-        const data = {
-            userId: "het", // Replace with actual user ID
-            subjectId: subjectId,
-            score: ans,
-            answers: questions.reduce((key, value) => {
-                key[value.qid] = selectedOption[value.qid];
-                return key;
-            }, {}),
-            // questionIds: questions.map(q => q.qid)
-        };
-        console.log("Data to be sent:", data);
-
-        fetch(`http://localhost:8080/score/save`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: data ? JSON.stringify(data) : null
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to save score");
+            let ans = 0;
+            questions.forEach(question => {
+                // const userAnswer = ;
+                if (selectedOption[question.qid] === question.answer) {
+                    ans += 1;
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Score saved successfully:", data);
-                navigate(`/answers/${subjectId}/${data.scoreId}`, { state: { selectedOption, questions, ans } })
-            })
-            .catch(error => {
-                console.error("Error saving score:", error);
             });
+            console.log("Calculated score:", ans);
 
-        
-      
+            const data = {
+                userId: "het", // Replace with actual user ID
+                subjectId: subjectId,
+                score: ans,
+                answers: questions.reduce((key, value) => {
+                    key[value.qid] = selectedOption[value.qid];
+                    return key;
+                }, {}),
+                // questionIds: questions.map(q => q.qid)
+            };
+            console.log("Data to be sent:", data);
+
+            fetch(`http://localhost:8080/score/save`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data ? JSON.stringify(data) : null
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to save score");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Score saved successfully:", data);
+                    navigate(`/answers/${subjectId}/${data.scoreId}`, { state: { selectedOption, questions, ans } })
+                })
+                .catch(error => {
+                    console.error("Error saving score:", error);
+                });
+        }, 1000)
+
+
     }
 
     const handleEdit = (qid) => {
@@ -123,6 +146,11 @@ function Quiz() {
 
     const isAdmin = false;
 
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+
     return (
         <div>
             <h3>Start your Quiz With Subject: {subjectId} </h3>
@@ -134,7 +162,9 @@ function Quiz() {
                 </h2>
 
                 <div>
-
+                    <div style={{ color: timer <= 10 ? "red" : "black" }}>
+                        Time Left: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
+                    </div>
                     <div>
                         {questions.map((q, i) => (
                             <div key={q.qid}>
@@ -152,15 +182,22 @@ function Quiz() {
 
                                 </div>
 
-                                <button style={{ margin: "2px"} }  className="edit-button" onClick={() => handleEdit(q.qid)}>Edit</button>
-                                <button style={{ margin: "2px"} }  className="delete-button" onClick={() => handleDelete(q.qid)}>Delete</button>
+                                {isAdmin ? <div>
+                                    <button style={{ margin: "2px" }} className="edit-button" onClick={() => handleEdit(q.qid)}>Edit</button>
+                                    <button style={{ margin: "2px" }} className="delete-button" onClick={() => handleDelete(q.qid)}>Delete</button>
+                                    <button style={{ margin: "25px 5px" }} id="submit" onClick={() => navigate(`/admin/add/question/${subjectId}`)}>Add Question</button>
+                                </div> : <div> </div>}
+
+
                             </div>
 
                         ))}
                         <div>
 
-                            <button style={{ margin: "25px 5px"}}  id="submit" onClick={submit}>Submit</button>
-                            <button style={{ margin: "25px 5px"}}  id="submit" onClick={() => navigate(`/admin/add/question/${subjectId}`)}>Add Question</button>
+                            {/* <button style={{ margin: "25px 5px" }} id="submit" onClick={submit}>Submit</button> */}
+                            <button style={{ margin: "25px 5px" }} id="submit" onClick={submit} disabled={isSubmitting}>
+                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                            </button>
                         </div>
                     </div>
 

@@ -14,9 +14,7 @@ function AdminHome() {
             <a href="/admin/users">Manage Users</a>
           </li>
 
-          <li style={{listStyle: "none", padding: "10px", margin: "5px 0"}}>
-            <a href="/admin/score">View Score</a>
-          </li>
+          
         </ul>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { use, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { getAllSubject } from "../middleware/GetAllSubject";
+import { getscoreBySub } from "../app/score/GetScore";
 
 function AdminQuiz() {
     const [subjects, setSubjects] = useState([]);
@@ -51,6 +52,31 @@ function AdminQuiz() {
 
     };
 
+     const addQuestion = (subjectId) => {
+    if (!subjectId) {
+      alert("Please select a subject to add a question.");
+      return;
+    }
+    navigate(`/admin/add/question/${subjectId}`);
+  };
+
+
+    const handleSubScore = (subjectId) => {
+        console.log("Fetching score by subject...", subjectId);
+        getscoreBySub(subjectId)
+            .then(data => {
+                console.log("Score data:", data);
+                // setGetScore(data);
+                navigate(`/admin/score/${subjectId}`, { state: { data } });
+                // Handle the score data as needed
+            })
+            .catch(error => {
+                console.error("Error fetching score by subject:", error);
+            });
+
+    };
+
+
     return (
         <div>
             <h2>Admin Quiz Page</h2>
@@ -81,6 +107,15 @@ function AdminQuiz() {
                                     <button style={{ margin: "5px"}}  onClick={() => {
                                         editSubject(subject.id, subject.subjectName);
                                     }}>Edit</button>
+
+                                     <button style={{ margin: "5px"}}  onClick={() => {
+                                        addQuestion(subject.id);
+                                    }}>Add Question</button>
+
+                                    <button style={{ margin: "5px"}}  onClick={() => {
+                                        handleSubScore(subject.id);
+                                    }}>View Score</button>
+
                                 </li>
                             ))}
                         </ul>

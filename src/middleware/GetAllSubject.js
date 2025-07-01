@@ -34,9 +34,7 @@ export const getSubjectById = async (subjectId) => {
     }
 
     const subject = await response.json();
-    console.log("Subject received:", subject);
-    return subject; // Return the subject for further processing if needed
-
+    return subject;
   } catch (error) {
     console.error("Error fetching subject:", error);
   }

@@ -8,7 +8,6 @@ function SubjectDropDownList({ subjectId, onChange }) {
     useEffect(() => {
         getAllSubject()
             .then(data => {
-                console.log("Fetched subjects:", data);
                 if (!Array.isArray(data)) {
                     throw new Error("Expected an array of subjects");
                 }

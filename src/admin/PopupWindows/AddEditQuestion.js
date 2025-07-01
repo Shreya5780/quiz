@@ -26,16 +26,6 @@ function AddEditQuestion() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // const formData = new FormData(event.target);
-        // questionData = {
-        //     question: formData.get('question'),
-        //     option1: formData.get('option1'),       
-        //     option2: formData.get('option2'),
-        //     option3: formData.get('option3'),
-        //     option4: formData.get('option4'),
-        //     answer: formData.get('answer'),
-        //     subjectId: subjectId
-        // };
 
         let url = `http://localhost:8080/questions/add/${subjectId}`;
 

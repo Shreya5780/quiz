@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { data, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getscoreBySub, getscoreByUser } from "./GetScore";
 import { getSubjectById } from "../../middleware/GetAllSubject";
@@ -12,97 +12,111 @@ function ScorePage() {
     const [getScore, setGetScore] = useState([]);
 
     const [subjectName, setSubjectName] = useState("");
-
+    const [subjectNames, setSubjectNames] = useState({});
 
     const location = useLocation();
-    const score = location.state?.data || { getScore: [] };
+    const scoreData = location.state?.data || [];
+    let score = [];
 
-    const [question, setQuestion] = useState([]);
-
+    const isUser = location.state?.data?.isUser || false;
 
     useEffect(() => {
-        if (!subjectId) {
-            return;
+
+        if (!Array.isArray(scoreData)) {
+            score = Object.values(scoreData).slice(0, -1);
+            setGetScore(score || []);
         }
-        console.log("Fetching score by subject on mount...", score, " with id ", subjectId);
-        setGetScore(score || []);
-        console.log("Initial score data:", score);
+        // if (Array.isArray(score)) {
 
-        getSubjectById(subjectId)
-            .then(data => {
-                console.log("Score data fetched by subject:", data);
-                setSubjectName(data.subjectName || "Unknown Subject");
+        // console.log("Fetching score by subject on mount...", score, " with id ", subjectId);
+        // console.log("Initial score data:", getScore);
+        // console.log("Initial score data:", isUser);
 
-                if (data.length > 0) {
-                    setSubjectName(data[0].subjectName || "Unknown Subject");
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching score by subject:", error);
-            });
+        if (!isUser && subjectId) {
+            // console.log("Fetching subject name for subjectId:", subjectId);
+            getSubjectById(subjectId)
+                .then(data => {
+                    console.log("Score data fetched by subject:", data);
+                    setSubjectName(data.subjectName || (data.length > 0 ? data[0].subjectName : "Unknown Subject"));
+                })
+                .catch(error => {
+                    console.error("Error fetching score by subject:", error);
+                });
+        } else {
+            const fetchAllsubjects = async () => {
+                const names = {};
+                await Promise.all(
+                    score.map(async (s) => {
+                        // console.log("Fetching subject name for subjectId: inside mapppppppppp  ", s.subjectId);
+                        try {
+                            const data = await getSubjectById(s.subjectId);
+                            names[s.subjectId] = data.subjectName || (data.length > 0 ? data[0].subjectName : "Unknown Subject");
+                        } catch {
+                            names[s.subjectId] = "Unknown Subject";
+                        }
+                    })
 
-    }, [subjectId, score]);
 
-    const handleUserScore = () => {
-        console.log("Fetching score by subject...");
-        getscoreByUser(userId)
-            .then(data => {
-                console.log("Score data:", data);
-                setGetScore(data);
-            })
-            .catch(error => {
-                console.error("Error fetching score by subject:", error);
-            });
-    };
+
+                );
+                // console.log(" subjectys....", names);
+                setSubjectNames(names);
+            };
+            fetchAllsubjects();
+        }
+        // }
+
+    }, [scoreData]);
+
+    // console.log(" subjectys", subjectNames);
+    // console.log(" subjectys", subjectName);
 
     const navigate = useNavigate();
 
-    const handleUserAnswers = (qids, score) => {
-        // Fetch all questions by their QIDs and update state
-        Promise.all(qids.map(qid => getQuestionByQID(qid)))
-            .then(data => {
-                console.log("Fetched question data:", data);
-                if (!Array.isArray(data)) {
-                    throw new Error("Expected an array of questions");
-                }
-                setQuestion(data);
 
-                console.log("Navigating to answers with data:", score.scoreId);
-                // console.log("Data to be sent:", dataToSend);
-                const selectedOption = score.answers ? score.answers : [];
-                const ans = score.score || 0;
-                const questions = data;
-                console.log("Navigating to answers with data:......................", questions, selectedOption, ans);
+    const handleUserAnswers = async (qids, score) => {
+    const selectedOption = score.answers || [];
+    const ans = score.score || 0;
 
-                // You can add navigation here if needed
-                navigate(`/answers/${score.subjectId}/${score.scoreId}`,
-                    {
-                        state: {
-                            selectedOption, questions, ans
-                        }
-                    })
-            })
-            .catch(error => {
-                console.error("Error fetching questions:", error);
-            });
+    try {
+        const allQuestions = await getQuestionsBySub(score.subjectId);
 
-    };
+        const questions = await Promise.all(qids.map(qid => getQuestionByQID(qid)));
+
+        const attemptedQIDs = new Set(qids);
+        const afterAttemptedQuestions = allQuestions.filter(q => !attemptedQIDs.has(q.qid));
+
+        console.log("Attempted Questions:", questions);
+        console.log("Unattempted Questions:", afterAttemptedQuestions);
+
+        navigate(`/answers/${score.subjectId}/${score.scoreId}`, {
+            state: {
+                selectedOption,
+                questions,
+                ans,
+                afterAttemptedQuestions 
+            }
+        });
+
+    } catch (error) {
+        console.error("Error fetching questions:", error);
+    }
+};
 
     return (
         <div>
             <h1>Score Page</h1>
 
-            <button onClick={handleUserScore}>Score By User</button>
-
             <div>
-                <h2>Score by Subject :  <span style={{ margin: "15px" }}>
-                    {subjectName}
-                </span></h2>
+                {isUser
+                    ? <>Score by User: <span style={{ margin: "15px" }}>{userId}</span></>
+                    : <>Score by Subject: <span style={{ margin: "15px" }}>{subjectName}</span></>
+                }
                 {getScore.length > 0 ? (
                     <table style={{ width: "100%" }}>
                         <thead>
                             <tr>
-                                <th>User</th>
+                                {isUser ? <th>Subject</th> : <th>User</th>}
                                 <th>Score</th>
                                 <th>Actions</th>
                             </tr>
@@ -110,7 +124,10 @@ function ScorePage() {
                         <tbody>
                             {getScore.map((score, index) => (
                                 <tr key={index} style={{ listStyle: "none", padding: "10px", margin: "5px 0" }}>
-                                    <td>  {score.userId} </td>
+                                    {isUser
+                                        ? <td>{subjectNames[score.subjectId] || score.subjectId}</td>
+                                        : <td>{score.userId}</td>
+                                    }
                                     <td>  {score.score} </td>
                                     <td>
                                         <button onClick={() =>

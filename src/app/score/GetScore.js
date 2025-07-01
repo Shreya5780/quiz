@@ -1,6 +1,5 @@
 export const getscoreBySub = async (subjectId) => {
     try {
-        console.log("subjectId in getscoreBySub", subjectId);
 
         const response = await fetch(`http://localhost:8080/score/getbysub/${subjectId}`, {
             method: "GET",
@@ -15,8 +14,9 @@ export const getscoreBySub = async (subjectId) => {
         }
         
         const result = await response.json();
-        console.log("Score received:", result);
-        return result; // Return the result for further processing if needed
+       const sendData = {  ...result, isUser: false}
+        console.log("Score received:", sendData);
+        return sendData;
         
     } catch (error) {
         console.error("Error saving score:", error);
@@ -25,7 +25,6 @@ export const getscoreBySub = async (subjectId) => {
 
 export const getscoreByUser = async (userId) => {
     try {
-        console.log("subjectId in getscoreBySub", userId);
 
         const response = await fetch(`http://localhost:8080/score/getbyuser/${userId}`, {
             method: "GET",
@@ -40,8 +39,9 @@ export const getscoreByUser = async (userId) => {
         }
         
         const result = await response.json();
-        console.log("Score received:", result);
-        return result; // Return the result for further processing if needed
+        const sendData = {  ...result, isUser: true}
+        console.log("Score received:", sendData);
+        return sendData;
         
     } catch (error) {
         console.error("Error saving score:", error);
