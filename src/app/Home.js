@@ -18,27 +18,6 @@ function Home() {
 
   }
 
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   SubjectDropDownList()
-  //     .then(data => {
-  //       console.log("Fetched subjects:", data);
-  //       if (!Array.isArray(data)) {
-  //         throw new Error("Expected an array of subjects");
-  //       }
-  //       setSubjects(data);
-  //       setSubjectId(data[0]?.id || "");
-  //       setLoading(false);
-  //     })
-  //     .catch(error => {
-  //       console.error("Error fetching subjects:", error);
-  //       setLoading(false);
-  //     });
-
-  // }, []);
-
   const addQuestion = () => {
     if (!subjectId) {
       alert("Please select a subject to add a question.");
@@ -55,7 +34,7 @@ function Home() {
             .then(data => {
                 console.log("Score data:", data);
                 // setGetScore(data);
-                navigate(`/admin/score`, { state: { data } });
+                navigate(`/admin/score/${subjectId}`, { state: { data } });
                 // Handle the score data as needed
             })
             .catch(error => {
@@ -67,22 +46,6 @@ function Home() {
   return (
     <><div>
       <h3> Welcome to MyQuiz, </h3>
-
-      <p>Please select subject to start with</p>
-
-      {/* <p>Available Subjects:</p>
-      {loading ? <p>Loading...</p> : (
-        <ul>
-          <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)}>
-            {subjects.map((sub, index) => (
-              <option key={index} value={sub.id}>
-                {sub.subjectName}
-              </option>
-            ))}
-          </select>
-
-        </ul>
-      )} */}
 
       <SubjectDropDownList subjectId={subjectId} onChange={setSubjectId} />
 

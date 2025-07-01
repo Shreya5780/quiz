@@ -19,3 +19,25 @@ export const getAllSubject = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
+export const getSubjectById = async (subjectId) => {
+  try {
+    const response = await fetch(`http://localhost:8080/admin/get/${subjectId}`, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch subject");
+    }
+
+    const subject = await response.json();
+    console.log("Subject received:", subject);
+    return subject; // Return the subject for further processing if needed
+
+  } catch (error) {
+    console.error("Error fetching subject:", error);
+  }
+}

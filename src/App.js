@@ -16,14 +16,15 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} ></Route>
           <Route path='/questions/:subjectId' element={<Quiz />} ></Route>
-          <Route path='/answers/:subjectId' element={<Score />}></Route>
+          <Route path='/answers/:subjectId/:scoreId' element={<Score />}></Route>
 
           {/* admin */}
           <Route path='/admin' element={<AdminHome />} ></Route>
           <Route path='/admin/quizzes' element={<AdminQuiz />} ></Route>
           <Route path='/admin/add/question/:subjectId' element={<AddEditQuestion />} ></Route>
           <Route path='/admin/users' element={<AdminHome />} ></Route>
-          <Route path='/admin/score' element={<ScorePage />} ></Route>
+          <Route path='/admin/score/:subjectId' element={<ScorePage />} ></Route>
+          <Route path='/view/answers/:userId/:scoreId' element={<Score />} ></Route>
 
           <Route path='/admin/add/subject' element={<AddSubject />} ></Route>
           <Route path='/admin/update/question/:subjectId/:qid' element={<AddEditQuestion />} > </Route>

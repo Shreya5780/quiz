@@ -38,7 +38,49 @@ function Quiz() {
     const submit = () => {
         console.log("Submitting answers:", selectedOption);
         console.log("Submitting answers subjectId ..........:", subjectId);
-        navigate(`/answers/${subjectId}`, { state: { selectedOption, questions } })
+
+        let ans = 0;
+        questions.forEach(question => {
+            const userAnswer = selectedOption[question.qid];
+            if (userAnswer === question.answer) {
+                ans += 1;
+            }
+        });
+        console.log("Calculated score:", ans);
+
+        const data = {
+            userId: "het", // Replace with actual user ID
+            subjectId: subjectId,
+            score: ans,
+            answers: questions.reduce((key, value) => {
+                key[value.qid] = selectedOption[value.qid];
+                return key;
+            }, {}),
+            // questionIds: questions.map(q => q.qid)
+        };
+        console.log("Data to be sent:", data);
+
+        fetch(`http://localhost:8080/score/save`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: data ? JSON.stringify(data) : null
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to save score");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Score saved successfully:", data);
+                navigate(`/answers/${subjectId}/${data.scoreId}`, { state: { selectedOption, questions, ans } })
+            })
+            .catch(error => {
+                console.error("Error saving score:", error);
+            });
+
         
       
     }
